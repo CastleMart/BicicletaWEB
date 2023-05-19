@@ -10,108 +10,112 @@ using BicicletaWEB.Models;
 
 namespace BicicletaWEB.Controllers
 {
-    public class VentasController : Controller
+    public class VentaDetalles2Controller : Controller
     {
         private Model1 db = new Model1();
 
-        // GET: Ventas
+        // GET: VentaDetalles2
         public ActionResult Index()
         {
-            return View(db.Ventas.ToList());
+            return View(db.VentaDetalles2.ToList());
         }
 
-        // GET: Ventas/Details/5
-        public ActionResult Details(int? id)
+        // GET: VentaDetalles2/Details/5
+        public ActionResult Details(int? id, int? id2)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Ventas ventas = db.Ventas.Find(id);
-            if (ventas == null)
+            VentaDetalles2 ventaDetalles2 = db.VentaDetalles2.Find(id, id2);
+            if (ventaDetalles2 == null)
             {
                 return HttpNotFound();
             }
-            return View(ventas);
+            return View(ventaDetalles2);
         }
 
-        // GET: Ventas/Create
+        // GET: VentaDetalles2/Create
         public ActionResult Create()
         {
             return View();
         }
 
-        // POST: Ventas/Create
+        // POST: VentaDetalles2/Create
         // Para protegerse de ataques de publicación excesiva, habilite las propiedades específicas a las que quiere enlazarse. Para obtener 
         // más detalles, vea https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "idVenta,fecha,precioTotal")] Ventas ventas)
+        public ActionResult Create([Bind(Include = "idVenta,idProducto,Cantidad")] VentaDetalles2 ventaDetalles2)
         {
-            if (ModelState.IsValid)
+            var ven = db.Productos.ToList();
+            var producto = ven.Where(a => a.idProducto == ventaDetalles2.idProducto);
+            bool hayProducto = producto.Any(n => n.Existencia >= ventaDetalles2.Cantidad);
+            
+            if (ModelState.IsValid && hayProducto)
             {
-                db.Ventas.Add(ventas);
+                producto.Select(a => a.Existencia -= ventaDetalles2.Cantidad).ToList();
+                db.VentaDetalles2.Add(ventaDetalles2);
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
 
-            return View(ventas);
+            return View(ventaDetalles2);
         }
 
-        // GET: Ventas/Edit/5
-        public ActionResult Edit(int? id)
+        // GET: VentaDetalles2/Edit/5
+        public ActionResult Edit(int? id, int? id2)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Ventas ventas = db.Ventas.Find(id);
-            if (ventas == null)
+            VentaDetalles2 ventaDetalles2 = db.VentaDetalles2.Find(id, id2);
+            if (ventaDetalles2 == null)
             {
                 return HttpNotFound();
             }
-            return View(ventas);
+            return View(ventaDetalles2);
         }
 
-        // POST: Ventas/Edit/5
+        // POST: VentaDetalles2/Edit/5
         // Para protegerse de ataques de publicación excesiva, habilite las propiedades específicas a las que quiere enlazarse. Para obtener 
         // más detalles, vea https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "idVenta,fecha,precioTotal")] Ventas ventas)
+        public ActionResult Edit([Bind(Include = "idVenta,idProducto,Cantidad")] VentaDetalles2 ventaDetalles2)
         {
-                       
             if (ModelState.IsValid)
             {
-                db.Entry(ventas).State = EntityState.Modified;
+                db.Entry(ventaDetalles2).State = EntityState.Modified;
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
-            return View(ventas);
+            return View(ventaDetalles2);
         }
 
-        // GET: Ventas/Delete/5
-        public ActionResult Delete(int? id)
+        // GET: VentaDetalles2/Delete/5
+        public ActionResult Delete(int? id, int? id2)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Ventas ventas = db.Ventas.Find(id);
-            if (ventas == null)
+            VentaDetalles2 ventaDetalles2 = db.VentaDetalles2.Find(id, id2);
+            if (ventaDetalles2 == null)
             {
                 return HttpNotFound();
             }
-            return View(ventas);
+            return View(ventaDetalles2);
         }
 
-        // POST: Ventas/Delete/5
+        // POST: VentaDetalles2/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public ActionResult DeleteConfirmed(int id)
+        public ActionResult DeleteConfirmed(int? id, int? id2)
         {
-            Ventas ventas = db.Ventas.Find(id);
-            db.Ventas.Remove(ventas);
+            VentaDetalles2 ventaDetalles2 = db.VentaDetalles2.Find(id, id2);
+            db.VentaDetalles2.Remove(ventaDetalles2);
             db.SaveChanges();
             return RedirectToAction("Index");
         }

@@ -8,6 +8,7 @@ namespace BicicletaWEB.Models
 
     public partial class Productos
     {
+        
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int idProducto { get; set; }
